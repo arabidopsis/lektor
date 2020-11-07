@@ -12,15 +12,12 @@ class PreviewPage extends RecordComponent {
       pageUrl: null,
       pageUrlFor: null
     }
+    this.iFrameRef = React.createRef();
   }
 
   componentDidMount () {
     super.componentDidMount()
     this.syncState()
-  }
-
-  shouldComponentUpdate () {
-    return this.getUrlRecordPathWithAlt() !== this.state.pageUrlFor
   }
 
   syncState () {
@@ -48,11 +45,11 @@ class PreviewPage extends RecordComponent {
     return null
   }
 
-  componentDidUpdate (nextProps) {
-    if (nextProps.match.params.path !== this.props.match.params.path) {
-      this.setState({}, this.syncState.bind(this))
+  componentDidUpdate (prevProps) {
+    if (prevProps.match.params.path !== this.props.match.params.path) {
+      this.syncState();
     }
-    const frame = this.refs.iframe
+    const frame = this.iFrameRef.current;
     const intendedPath = this.getIntendedPath()
     if (intendedPath !== null) {
       const framePath = this.getFramePath()
@@ -68,7 +65,7 @@ class PreviewPage extends RecordComponent {
   }
 
   getFramePath () {
-    const frameLocation = this.refs.iframe.contentWindow.location
+    const frameLocation = this.iFrameRef.current.contentWindow.location
     if (frameLocation.href === 'about:blank') {
       return frameLocation.href
     }
@@ -84,7 +81,7 @@ class PreviewPage extends RecordComponent {
     loadData('/matchurl', { url_path: fsPath }, null, makeRichPromise)
       .then((resp) => {
         if (resp.exists) {
-          const urlPath = this.getUrlRecordPathWithAlt(resp.path, resp.alt)
+          const urlPath = this.getUrlRecordPathWithAlt(resp.path, resp.alt, resp.page_num)
           this.transitionToAdminPage('.preview', { path: urlPath })
         }
       })
@@ -93,7 +90,7 @@ class PreviewPage extends RecordComponent {
   render () {
     return (
       <div className='preview'>
-        <iframe ref='iframe' />
+        <iframe ref={this.iFrameRef} />
       </div>
     )
   }
