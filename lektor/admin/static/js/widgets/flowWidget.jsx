@@ -165,7 +165,7 @@ export class FlowWidget extends React.PureComponent {
 
     // find the first available id for this new block - use findMax + 1
     const blockIds = this.props.value.map(block => block.localId)
-    const newBlockId = Math.max(...blockIds) + 1
+    const newBlockId = blockIds.length === 0 ? 1 : Math.max(...blockIds) + 1
 
     // this is a rather ugly way to do this, but hey, it works.
     const newValue = [
