@@ -81,7 +81,15 @@ def get_record_info():
                 }
             )
 
-    child_order_by = pad.query(request_path).get_order_by() or []
+    query = pad.query(request_path)
+
+    if '@' in request_path:
+        record = query.self
+        if record.page_num and record.page_num > 1 and record.supports_pagination:
+            tree = g.admin_context.tree
+            children.extend([tree.get(i.path) for i in record.pagination.items])
+
+    child_order_by = query.get_order_by() or []
 
     return jsonify(
         id=tree_item.id,
