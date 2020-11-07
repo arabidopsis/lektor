@@ -17,11 +17,12 @@ class FindFiles extends RecordComponent {
       currentSelection: -1,
       results: []
     }
+    this.inputRef = React.createRef();
   }
 
   componentDidMount () {
     super.componentDidMount()
-    this.refs.q.focus()
+    this.inputRef.current.focus()
   }
 
   onInputChange (e) {
@@ -126,7 +127,7 @@ class FindFiles extends RecordComponent {
         <div className='form-group'>
           <input
             type='text'
-            ref='q'
+            ref={self.inputRef}
             className='form-control'
             value={this.state.query}
             onChange={this.onInputChange.bind(this)}
