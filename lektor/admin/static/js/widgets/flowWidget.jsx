@@ -179,7 +179,7 @@ export class FlowWidget extends React.PureComponent {
     const { collapsed } = this.props.value[idx]
     const newValue = [...this.props.value]
     newValue[idx] = { ...this.props.value[idx], collapsed: !collapsed }
-    this.props.onChange(newValue)
+    this.props.onChange(newValue, false) // true => just ui changed
   }
 
   renderFormField (blockInfo, field, idx) {
