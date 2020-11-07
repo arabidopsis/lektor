@@ -12,7 +12,7 @@ class PreviewPage extends RecordComponent {
       pageUrl: null,
       pageUrlFor: null
     }
-    this.iFrameRef = React.createRef();
+    this.iFrameRef = React.createRef()
   }
 
   componentDidMount () {
@@ -49,7 +49,7 @@ class PreviewPage extends RecordComponent {
     if (prevProps.match.params.path !== this.props.match.params.path) {
       this.syncState()
     }
-    const frame = this.iFrameRef.current;
+    const frame = this.iFrameRef.current
     const intendedPath = this.getIntendedPath()
     if (intendedPath !== null) {
       const framePath = this.getFramePath()
