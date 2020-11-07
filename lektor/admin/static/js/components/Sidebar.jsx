@@ -379,7 +379,7 @@ class Sidebar extends RecordComponent {
 
     sections.push(this.renderAlts())
 
-    if (this.state.canHaveChildren) {
+    if (this.state.recordChildren.length > 0) {
       sections.push(this.renderChildActions())
     }
 
