@@ -19,14 +19,15 @@ class AddAttachmentPage extends RecordComponent {
       isUploading: false,
       currentProgress: 0
     }
+    this.fileRef = React.createRef()
   }
 
   componentDidMount () {
     this.syncDialog()
   }
 
-  componentDidUpdate (nextProps) {
-    if (nextProps.match.params.path !== this.props.match.params.path) {
+  componentDidUpdate (prevProps) {
+    if (prevProps.match.params.path !== this.props.match.params.path) {
       this.syncDialog()
     }
   }
@@ -41,7 +42,7 @@ class AddAttachmentPage extends RecordComponent {
   }
 
   uploadFile (event) {
-    this.refs.file.click()
+    this.fileRef.current.click()
   }
 
   onUploadProgress (event) {
@@ -72,7 +73,7 @@ class AddAttachmentPage extends RecordComponent {
       return
     }
 
-    const files = this.refs.file.files
+    const files = this.fileRef.current.files
     this.setState({
       currentFiles: Array.prototype.slice.call(files, 0),
       isUploading: true
@@ -119,7 +120,7 @@ class AddAttachmentPage extends RecordComponent {
         {this.renderCurrentFiles()}
         <p>{i18n.trans('PROGRESS')}: {this.state.currentProgress}%</p>
         <input
-          type='file' ref='file' multiple
+          type='file' ref={this.fileRef} multiple
           style={{ display: 'none' }} onChange={this.onFileSelected.bind(this)}
         />
         <div className='actions'>

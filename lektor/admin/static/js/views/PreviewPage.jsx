@@ -47,7 +47,7 @@ class PreviewPage extends RecordComponent {
 
   componentDidUpdate (prevProps) {
     if (prevProps.match.params.path !== this.props.match.params.path) {
-      this.syncState();
+      this.syncState()
     }
     const frame = this.iFrameRef.current;
     const intendedPath = this.getIntendedPath()
@@ -81,7 +81,7 @@ class PreviewPage extends RecordComponent {
     loadData('/matchurl', { url_path: fsPath }, null, makeRichPromise)
       .then((resp) => {
         if (resp.exists) {
-          const urlPath = this.getUrlRecordPathWithAlt(resp.path, resp.alt, resp.page_num)
+          const urlPath = this.getUrlRecordPathWithAlt(resp.path, resp.alt, resp.pageNum)
           this.transitionToAdminPage('.preview', { path: urlPath })
         }
       })
