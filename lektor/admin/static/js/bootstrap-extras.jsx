@@ -1,7 +1,7 @@
-import $ from 'jquery'
+import jQuery from 'jquery'
 
-$(document).ready(function () {
-  $('[data-toggle=offcanvas]').click(function () {
+jQuery(function ($) {
+  $('[data-toggle=offcanvas]').on('click', function () {
     const target = $($(this).attr('data-target') || '.block-offcanvas')
     const isActive = target.is('.active')
     target.toggleClass('active', !isActive)
