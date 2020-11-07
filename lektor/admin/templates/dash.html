@@ -11,7 +11,9 @@
     var $LEKTOR_CONFIG = {
       admin_root: {{ g.admin_context.admin_root|tojson }},
       site_root: {{ g.admin_context.site_root|tojson }},
-      lang: {{ g.admin_context.info.ui_lang|tojson }}
+      lang: {{ g.admin_context.info.ui_lang|tojson }},
+      ping_interval: {{ g.admin_context.pad.config.PROJECT.ping_interval|default(2000)|int|tojson }}
+
     };
   </script>
 {% endblock %}
