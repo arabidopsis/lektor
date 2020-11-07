@@ -83,7 +83,7 @@ def get_record_info():
 
     query = pad.query(request_path)
 
-    if '@' in request_path:
+    if "@" in request_path:
         record = query.self
         if record.page_num and record.page_num > 1 and record.supports_pagination:
             tree = g.admin_context.tree
@@ -165,8 +165,9 @@ def match_url():
     )
     if record is None:
         return jsonify(exists=False, path=None, alt=None)
-    return jsonify(exists=True, path=record["_path"], alt=record["_alt"], 
-        page_num=record.page_num)
+    return jsonify(
+        exists=True, path=record["_path"], alt=record["_alt"], page_num=record.page_num
+    )
 
 
 @bp.route("/rawrecord")
