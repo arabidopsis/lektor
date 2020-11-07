@@ -29,7 +29,7 @@ export default class RecordComponent extends Component {
 
   /* return the url path for the current record path (or a modified one)
      by preserving or overriding the alt */
-  getUrlRecordPathWithAlt (newPath, newAlt) {
+  getUrlRecordPathWithAlt (newPath, newAlt, page_num) {
     if (newPath === undefined || newPath === null) {
       newPath = this.getRecordPath()
     }
@@ -37,6 +37,9 @@ export default class RecordComponent extends Component {
       newAlt = this.getRecordAlt()
     }
     let rv = fsToUrlPath(newPath)
+    if (page_num && page_num !== 1) {
+      rv += `@${page_num}`
+    }
     if (newAlt !== '_primary') {
       rv += '+' + newAlt
     }
