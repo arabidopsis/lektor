@@ -166,7 +166,7 @@ def match_url():
     if record is None:
         return jsonify(exists=False, path=None, alt=None)
     return jsonify(
-        exists=True, path=record["_path"], alt=record["_alt"], page_num=record.page_num
+        exists=True, path=record["_path"], alt=record["_alt"], pageNum=record.page_num
     )
 
 
