@@ -165,9 +165,9 @@ def match_url():
     )
     if record is None:
         return jsonify(exists=False, path=None, alt=None)
-    return jsonify(
-        exists=True, path=record["_path"], alt=record["_alt"], page_num=record.page_num
-    )
+
+    return jsonify(exists=True, path=record["_path"], alt=record["_alt"],
+        pageNum=record.page_num)
 
 
 @bp.route("/rawrecord")
@@ -189,7 +189,7 @@ def get_new_record_info():
         can_have_children = False
     else:
         can_have_children = True
-    implied = ts.datamodel.child_config.model
+    implied = ts.datamodel.child_config.models
 
     def describe_model(model):
         primary_field = None
@@ -208,11 +208,12 @@ def get_new_record_info():
         {
             "label": ts.record and ts.record.record_label or ts.id,
             "can_have_children": can_have_children,
-            "implied_model": implied,
+            "implied_model": implied[0] if implied else None,
+            "implied_models" : implied,
             "available_models": dict(
                 (k, describe_model(v))
                 for k, v in iteritems(pad.db.datamodels)
-                if not v.hidden or k == implied
+                if not v.hidden or k in implied
             ),
         }
     )

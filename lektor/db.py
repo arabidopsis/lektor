@@ -1441,7 +1441,7 @@ class Database(object):
                 deep_find(datamodel.parent)
 
             for related_dm_name in (
-                datamodel.child_config.model,
+                *datamodel.child_config.models,
                 datamodel.attachment_config.model,
             ):
                 dm = self.datamodels.get(related_dm_name)

@@ -31,16 +31,27 @@ class ChildConfig(object):
             enabled = True
         self.enabled = enabled
         self.slug_format = slug_format
-        self.model = model
+        self._models = tuple([m.strip() for m  in model.split(',') if m.strip()]) if model else ()
         self.order_by = order_by
         self.replaced_with = replaced_with
         self.hidden = hidden
+
+    @property
+    def model(self):
+        if self._models:
+            return self._models[0]
+        return None
+
+    @property
+    def models(self):
+        return self._models
 
     def to_json(self):
         return {
             "enabled": self.enabled,
             "slug_format": self.slug_format,
             "model": self.model,
+            "models": list(self.models),
             "order_by": self.order_by,
             "replaced_with": self.replaced_with,
             "hidden": self.hidden,

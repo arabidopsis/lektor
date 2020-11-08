@@ -58,9 +58,9 @@ class PreviewPage extends RecordComponent {
         frame.src = getCanonicalUrl(intendedPath)
       }
 
-      frame.onload = (event) => {
-        this.onFrameNavigated()
-      }
+      // frame.onload = (event) => {
+      //   this.onFrameNavigated()
+      // }
     }
   }
 
@@ -90,7 +90,7 @@ class PreviewPage extends RecordComponent {
   render () {
     return (
       <div className='preview'>
-        <iframe ref={this.iFrameRef} />
+        <iframe ref={this.iFrameRef} onload={this.onFrameNavigated.bind(this)} />
       </div>
     )
   }
