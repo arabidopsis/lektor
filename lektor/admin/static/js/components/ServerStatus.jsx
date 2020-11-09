@@ -18,7 +18,7 @@ class ServerStatus extends React.Component {
   }
 
   componentDidMount () {
-    this.intervalId = window.setInterval(this.onInterval, $LEKTOR_CONFIG.ping_interval)
+    this.intervalId = window.setInterval(this.onInterval, $LEKTOR_CONFIG.ping_interval || 2000)
   }
 
   componentWillUnmount () {

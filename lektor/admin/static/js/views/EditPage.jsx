@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Prompt } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 import RecordComponent from '../components/RecordComponent'
 import { apiRequest, loadData, isMetaKey } from '../utils'
@@ -21,7 +22,11 @@ class EditPage extends RecordComponent {
     }
     this._onKeyPress = this._onKeyPress.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
-    this.form = React.createRef()
+    this.handleSaveChanges = this.handleSaveChanges.bind(this)
+    this.handleSaveChangesAndPreview = this.handleSaveChangesAndPreview.bind(this)
+    this.handleDeleteRecord = this.handleDeleteRecord.bind(this)
+    this.renderFormField = this.renderFormField.bind(this)
+    this.formRef = React.createRef()
   }
 
   componentDidMount () {
@@ -44,9 +49,12 @@ class EditPage extends RecordComponent {
     // meta+s is open find files
     if (event.which === 83 && isMetaKey(event)) {
       event.preventDefault()
-      const { current } = this.form
+      if (!this.state.hasPendingChanges) {
+        return
+      }
+      const { current } = this.formRef
       if (current && current.reportValidity()) {
-        this.saveChanges()
+        this.handleSaveChanges(event)
       }
     }
   }
@@ -126,17 +134,43 @@ class EditPage extends RecordComponent {
     return rv
   }
 
-  saveChanges (event) {
-    if (event) {
-      event.preventDefault()
-    }
-
+  handleSaveChanges (event) {
+    event.preventDefault()
     const path = this.getRecordPath()
     const alt = this.getRecordAlt()
     const newData = this.getValues()
     apiRequest('/rawrecord', {
       json: { data: newData, path: path, alt: alt },
       // eslint-disable-next-line indent
+      method: 'PUT'
+    }, makeRichPromise)
+      .then((resp) => {
+        this.setState({
+          hasPendingChanges: false
+        }, () => {
+          Swal.fire({
+            title: 'Saved!',
+            icon: 'success',
+            toast: true,
+            position: 'center',
+            timer: 1500,
+            showConfirmButton: false
+          }
+          )
+          this.transitionToAdminPage('.edit', {
+            path: this.getUrlRecordPathWithAlt(path)
+          })
+        })
+      })
+  }
+
+  handleSaveChangesAndPreview (event) {
+    event.preventDefault()
+    const path = this.getRecordPath()
+    const alt = this.getRecordAlt()
+    const newData = this.getValues()
+    apiRequest('/rawrecord', {
+      json: { data: newData, path: path, alt: alt },
       method: 'PUT'
     }, makeRichPromise)
       .then((resp) => {
@@ -150,7 +184,8 @@ class EditPage extends RecordComponent {
       })
   }
 
-  deleteRecord (event) {
+  handleDeleteRecord (event) {
+    event.preventDefault()
     this.transitionToAdminPage('.delete', {
       path: this.getUrlRecordPathWithAlt()
     })
@@ -205,7 +240,7 @@ class EditPage extends RecordComponent {
 
     const deleteButton = this.state.recordInfo.can_be_deleted
       ? (
-        <button type='button' className='btn btn-default' onClick={this.deleteRecord.bind(this)}>
+        <button type='button' className='btn btn-default' onClick={this.handleDeleteRecord}>
           {i18n.trans('DELETE')}
         </button>
       )
@@ -224,14 +259,25 @@ class EditPage extends RecordComponent {
       <div className='edit-area'>
         {this.state.hasPendingChanges && <Prompt message={() => i18n.trans('UNLOAD_ACTIVE_TAB')} />}
         <h2>{title.replace('%s', label)}</h2>
-        <form ref={this.form} onSubmit={this.saveChanges.bind(this)}>
+        <form ref={this.formRef}>
           <FieldRows
             fields={fields}
-            renderFunc={this.renderFormField.bind(this)}
+            renderFunc={this.renderFormField}
           />
           <div className='actions'>
-            <button type='submit' className='btn btn-primary'>
+            <button
+              type='submit' className='btn btn-primary'
+              disabled={!this.state.hasPendingChanges}
+              onClick={this.handleSaveChanges}
+            >
               {i18n.trans('SAVE_CHANGES')}
+            </button>
+            <button
+              type='submit' className='btn btn-info'
+              disabled={!this.state.hasPendingChanges}
+              onClick={this.handleSaveChangesAndPreview}
+            >
+              {i18n.trans('SAVE_CHANGES_AND_PREVIEW')}
             </button>
             {deleteButton}
           </div>

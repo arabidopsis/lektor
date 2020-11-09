@@ -1,5 +1,5 @@
 'use strict'
-
+/* eslint-env browser */
 import React from 'react'
 import { getInputClass, widgetPropTypes } from './mixins'
 import { isValidUrl } from '../utils'
@@ -171,6 +171,7 @@ export class MultiLineTextInputWidget extends React.Component {
   constructor (props) {
     super(props)
     this.recalculateSize = this.recalculateSize.bind(this)
+    this.taRef = React.createRef()
   }
 
   onChange (event) {
@@ -200,7 +201,7 @@ export class MultiLineTextInputWidget extends React.Component {
       return
     }
     let diff
-    const node = this.refs.ta
+    const node = this.taRef.current
 
     if (window.getComputedStyle) {
       const s = window.getComputedStyle(node)
@@ -246,7 +247,7 @@ export class MultiLineTextInputWidget extends React.Component {
     return (
       <div>
         <textarea
-          ref='ta'
+          ref={this.taRef}
           className={getInputClass(type)}
           onChange={this.onChange.bind(this)}
           style={style}

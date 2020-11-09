@@ -90,7 +90,7 @@ class PreviewPage extends RecordComponent {
   render () {
     return (
       <div className='preview'>
-        <iframe ref={this.iFrameRef} onload={this.onFrameNavigated.bind(this)} />
+        <iframe ref={this.iFrameRef} onLoad={this.onFrameNavigated.bind(this)} />
       </div>
     )
   }

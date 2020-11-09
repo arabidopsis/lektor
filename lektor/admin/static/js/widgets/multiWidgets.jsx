@@ -21,6 +21,11 @@ function checkboxIsActive (field, props) {
   return false
 }
 
+function asHTML(txt) {
+  const p= { dangerouslySetInnerHTML: { __html: txt} }
+  return <span {...p}></span>
+}
+
 export class CheckboxesInputWidget extends React.PureComponent {
   static serializeValue (value) {
     return (value || '').join(', ')
@@ -57,7 +62,7 @@ export class CheckboxesInputWidget extends React.PureComponent {
             checked={checkboxIsActive(item[0], this.props)}
             onChange={(e) => onChangeHandler(item[0], e)}
           />
-          {i18n.trans(item[1])}
+          {asHTML(i18n.trans(item[1]))}
         </label>
       </div>
     ))
