@@ -21,9 +21,9 @@ function checkboxIsActive (field, props) {
   return false
 }
 
-function asHTML(txt) {
-  const p= { dangerouslySetInnerHTML: { __html: txt} }
-  return <span {...p}></span>
+function asHTML (html) {
+  const p = { dangerouslySetInnerHTML: { __html: html } }
+  return <span {...p} />
 }
 
 export class CheckboxesInputWidget extends React.PureComponent {

@@ -16,6 +16,7 @@ class DeletePage extends RecordComponent {
       recordInfo: null,
       deleteMasterRecord: true
     }
+    this.focusRef = React.createRef()
   }
 
   componentDidMount () {
@@ -36,6 +37,7 @@ class DeletePage extends RecordComponent {
           recordInfo: resp,
           deleteMasterRecord: this.isPrimary()
         })
+        this.focusRef.current.focus()
       })
   }
 
@@ -213,14 +215,16 @@ class DeletePage extends RecordComponent {
         </div>
         <div className='actions'>
           <button
-            className='btn btn-primary'
-            onClick={this.deleteRecord.bind(this)}
-          >{i18n.trans('YES_DELETE')}
-          </button>
-          <button
             className='btn btn-default'
             onClick={this.cancelDelete.bind(this)}
+            ref={this.focusRef}
           >{i18n.trans('NO_CANCEL')}
+          </button>
+          <button
+            className='btn btn-primary'
+            tabIndex='-1'
+            onClick={this.deleteRecord.bind(this)}
+          >{i18n.trans('YES_DELETE')}
           </button>
         </div>
       </div>

@@ -551,7 +551,7 @@ def make_image_thumbnail(
     width=None,
     height=None,
     mode=ThumbnailMode.DEFAULT,
-    upscale=None,
+    upscale=False,
     quality=None,
 ):
     """Helper method that can create thumbnails from within the build process
