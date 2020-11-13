@@ -87,6 +87,21 @@ def test_basic_query_syntax(pad, F):
     assert [x["name"] for x in encumbered] == ["Master", "Slave"]
 
 
+def test_isin_syntax(pad, F):
+    projects = pad.get("/projects")
+
+    encumbered = (
+        projects.children.filter(
+            F.name.isin(["Master", "Slave", "Coffee", "not-a-name"])
+        )
+        .order_by("name")
+        .all()
+    )
+
+    assert len(encumbered) == 3
+    assert [x["name"] for x in encumbered] == ["Coffee", "Master", "Slave"]
+
+
 def test_basic_query_syntax_template(pad, eval_expr):
     projects = pad.get("/projects")
 

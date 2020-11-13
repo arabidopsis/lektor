@@ -215,6 +215,9 @@ class Expression(object):
     def contains(self, item):
         return _ContainmentExpr(self, _auto_wrap_expr(item))
 
+    def isin(self, seq):
+        return _ContainmentExpr(_auto_wrap_expr(seq), self)
+
     def startswith(self, other):
         return _BinExpr(
             self,
@@ -301,8 +304,10 @@ class _ContainmentExpr(Expression):
     def __eval__(self, record):
         seq = self.__seq.__eval__(record)
         item = self.__item.__eval__(record)
+
         if isinstance(item, Record):
             item = item["_id"]
+        print("HERE", item, seq)
         return item in seq
 
 
