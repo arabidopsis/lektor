@@ -31,7 +31,9 @@ class ChildConfig(object):
             enabled = True
         self.enabled = enabled
         self.slug_format = slug_format
-        self._models = tuple([m.strip() for m  in model.split(',') if m.strip()]) if model else ()
+        self._models = (
+            tuple([m.strip() for m in model.split(",") if m.strip()]) if model else ()
+        )
         self.order_by = order_by
         self.replaced_with = replaced_with
         self.hidden = hidden

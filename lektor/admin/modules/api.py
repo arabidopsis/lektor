@@ -83,11 +83,13 @@ def get_record_info():
 
     query = pad.query(request_path)
 
+    # added by IRC
     if "@" in request_path:
         record = query.self
         if record.page_num and record.page_num > 1 and record.supports_pagination:
             tree = g.admin_context.tree
             children.extend([tree.get(i.path) for i in record.pagination.items])
+    # ...
 
     child_order_by = query.get_order_by() or []
 
@@ -166,8 +168,9 @@ def match_url():
     if record is None:
         return jsonify(exists=False, path=None, alt=None)
 
-    return jsonify(exists=True, path=record["_path"], alt=record["_alt"],
-        pageNum=record.page_num)
+    return jsonify(
+        exists=True, path=record["_path"], alt=record["_alt"], pageNum=record.page_num
+    )
 
 
 @bp.route("/rawrecord")
@@ -209,7 +212,7 @@ def get_new_record_info():
             "label": ts.record and ts.record.record_label or ts.id,
             "can_have_children": can_have_children,
             "implied_model": implied[0] if implied else None,
-            "implied_models" : implied,
+            "implied_models": implied,
             "available_models": dict(
                 (k, describe_model(v))
                 for k, v in iteritems(pad.db.datamodels)
