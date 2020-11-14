@@ -307,7 +307,6 @@ class _ContainmentExpr(Expression):
 
         if isinstance(item, Record):
             item = item["_id"]
-        print("HERE", item, seq)
         return item in seq
 
 
