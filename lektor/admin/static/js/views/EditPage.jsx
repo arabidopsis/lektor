@@ -1,225 +1,244 @@
-'use strict'
+import React from "react";
+import { Prompt } from "react-router-dom";
 
-import React from 'react'
-import { Prompt } from 'react-router-dom'
-import Swal from 'sweetalert2'
-
-import RecordComponent from '../components/RecordComponent'
-import { apiRequest, loadData, isMetaKey } from '../utils'
-import i18n from '../i18n'
-import { getWidgetComponentWithFallback, FieldBox, FieldRows } from '../widgets'
-import makeRichPromise from '../richPromise'
+import RecordComponent from "../components/RecordComponent";
+import { apiRequest, loadData, isMetaKey } from "../utils";
+import Swal from "sweetalert2";
+import i18n from "../i18n";
+import {
+  getWidgetComponentWithFallback,
+  FieldBox,
+  FieldRows,
+} from "../widgets";
+import makeRichPromise from "../richPromise";
 
 class EditPage extends RecordComponent {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
     this.state = {
       recordData: null,
       recordDataModel: null,
       recordInfo: null,
-      hasPendingChanges: false
-    }
-    this._onKeyPress = this._onKeyPress.bind(this)
-    this.setFieldValue = this.setFieldValue.bind(this)
-    this.handleSaveChanges = this.handleSaveChanges.bind(this)
-    this.handleSaveChangesAndPreview = this.handleSaveChangesAndPreview.bind(this)
-    this.handleDeleteRecord = this.handleDeleteRecord.bind(this)
-    this.renderFormField = this.renderFormField.bind(this)
-    this.formRef = React.createRef()
+      hasPendingChanges: false,
+    };
+    this._onKeyPress = this._onKeyPress.bind(this);
+    this.setFieldValue = this.setFieldValue.bind(this);
+    this.handleSaveChanges = this.handleSaveChanges.bind(this);
+    this.handleSaveChangesAndPreview = this.handleSaveChangesAndPreview.bind(
+      this
+    );
+    this.handleDeleteRecord = this.handleDeleteRecord.bind(this);
+    this.renderFormField = this.renderFormField.bind(this);
+    this.formRef = React.createRef();
   }
 
-  componentDidMount () {
-    super.componentDidMount()
-    this.syncEditor()
-    window.addEventListener('keydown', this._onKeyPress)
+  componentDidMount() {
+    super.componentDidMount();
+    this.syncEditor();
+    window.addEventListener("keydown", this._onKeyPress);
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.match.params.path !== this.props.match.params.path) {
-      this.syncEditor()
+      this.syncEditor();
     }
   }
 
-  componentWillUnmount () {
-    window.removeEventListener('keydown', this._onKeyPress)
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this._onKeyPress);
   }
 
-  _onKeyPress (event) {
+  _onKeyPress(event) {
     // meta+s is open find files
     if (event.which === 83 && isMetaKey(event)) {
-      event.preventDefault()
+      event.preventDefault();
       if (!this.state.hasPendingChanges) {
-        return
+        return;
       }
-      const { current } = this.formRef
+      const { current } = this.formRef;
       if (current && current.reportValidity()) {
-        this.handleSaveChanges(event)
+        this.handleSaveChanges(event);
       }
     }
   }
 
-  isIllegalField (field) {
+  isIllegalField(field) {
     switch (field.name) {
-      case '_id':
-      case '_path':
-      case '_gid':
-      case '_alt':
-      case '_source_alt':
-      case '_model':
-      case '_attachment_for':
-        return true
-      case '_attachment_type':
-        return !this.state.recordInfo.is_attachment
+      case "_id":
+      case "_path":
+      case "_gid":
+      case "_alt":
+      case "_source_alt":
+      case "_model":
+      case "_attachment_for":
+        return true;
+      case "_attachment_type":
+        return !this.state.recordInfo.is_attachment;
     }
-    return false
+    return false;
   }
 
-  syncEditor () {
-    loadData('/rawrecord', {
-      path: this.getRecordPath(),
-      alt: this.getRecordAlt()
-    }, null, makeRichPromise)
-      .then((resp) => {
-        // transform resp.data into actual data
-        const recordData = {}
-        resp.datamodel.fields.forEach(field => {
-          const widget = getWidgetComponentWithFallback(field.type)
-          let value = resp.data[field.name]
-          if (value !== undefined) {
-            if (widget.deserializeValue) {
-              value = widget.deserializeValue(value, field.type)
-            }
-            recordData[field.name] = value
+  syncEditor() {
+    loadData(
+      "/rawrecord",
+      {
+        path: this.getRecordPath(),
+        alt: this.getRecordAlt(),
+      },
+      null,
+      makeRichPromise
+    ).then((resp) => {
+      // transform resp.data into actual data
+      const recordData = {};
+      resp.datamodel.fields.forEach((field) => {
+        const widget = getWidgetComponentWithFallback(field.type);
+        let value = resp.data[field.name];
+        if (value !== undefined) {
+          if (widget.deserializeValue) {
+            value = widget.deserializeValue(value, field.type);
           }
-        })
-        this.setState({
-          recordData,
-          recordDataModel: resp.datamodel,
-          recordInfo: resp.record_info,
-          hasPendingChanges: false
-        })
-      })
+          recordData[field.name] = value;
+        }
+      });
+      this.setState({
+        recordData,
+        recordDataModel: resp.datamodel,
+        recordInfo: resp.record_info,
+        hasPendingChanges: false,
+      });
+    });
   }
 
-  setFieldValue (field, value, uiChange) {
-    const rd = { ...this.state.recordData, [field.name]: value || '' }
+  setFieldValue(field, value, uiChange) {
+    const rd = { ...this.state.recordData, [field.name]: value || "" };
     this.setState({
       recordData: rd,
-      hasPendingChanges: !uiChange // !undefined => true
-    })
+      hasPendingChanges: !uiChange, // !undefined => true
+    });
   }
 
-  getValues () {
-    const rv = {}
+  getValues() {
+    const rv = {};
     this.state.recordDataModel.fields.forEach((field) => {
       if (this.isIllegalField(field)) {
-        return
+        return;
       }
 
-      let value = this.state.recordData[field.name]
+      let value = this.state.recordData[field.name];
 
       if (value !== undefined) {
-        const Widget = getWidgetComponentWithFallback(field.type)
+        const Widget = getWidgetComponentWithFallback(field.type);
         if (Widget.serializeValue) {
-          value = Widget.serializeValue(value, field.type)
+          value = Widget.serializeValue(value, field.type);
         }
       } else {
-        value = null
+        value = null;
       }
 
-      rv[field.name] = value
-    })
+      rv[field.name] = value;
+    });
 
-    return rv
+    return rv;
   }
 
-  handleSaveChanges (event) {
-    event.preventDefault()
-    const path = this.getRecordPath()
-    const alt = this.getRecordAlt()
-    const newData = this.getValues()
-    apiRequest('/rawrecord', {
-      json: { data: newData, path: path, alt: alt },
-      // eslint-disable-next-line indent
-      method: 'PUT'
-    }, makeRichPromise)
-      .then((resp) => {
-        this.setState({
-          hasPendingChanges: false
-        }, () => {
+  handleSaveChanges(event) {
+    event.preventDefault();
+    const path = this.getRecordPath();
+    const alt = this.getRecordAlt();
+    const newData = this.getValues();
+    apiRequest(
+      "/rawrecord",
+      {
+        json: { data: newData, path: path, alt: alt },
+        // eslint-disable-next-line indent
+        method: "PUT",
+      },
+      makeRichPromise
+    ).then((resp) => {
+      this.setState(
+        {
+          hasPendingChanges: false,
+        },
+        () => {
           Swal.fire({
-            title: 'Saved!',
-            icon: 'success',
+            title: "Saved!",
+            icon: "success",
             toast: true,
-            position: 'center',
+            position: "center",
             timer: 1500,
-            showConfirmButton: false
-          }
-          )
-          this.transitionToAdminPage('.edit', {
-            path: this.getUrlRecordPathWithAlt(path)
-          })
-        })
-      })
+            showConfirmButton: false,
+          });
+          this.transitionToAdminPage(".edit", {
+            path: this.getUrlRecordPathWithAlt(path),
+          });
+        }
+      );
+    });
   }
 
-  handleSaveChangesAndPreview (event) {
-    event.preventDefault()
-    const path = this.getRecordPath()
-    const alt = this.getRecordAlt()
-    const newData = this.getValues()
-    apiRequest('/rawrecord', {
-      json: { data: newData, path: path, alt: alt },
-      method: 'PUT'
-    }, makeRichPromise)
-      .then((resp) => {
-        this.setState({
-          hasPendingChanges: false
-        }, () => {
-          this.transitionToAdminPage('.preview', {
-            path: this.getUrlRecordPathWithAlt(path)
-          })
-        })
-      })
+  handleSaveChangesAndPreview(event) {
+    event.preventDefault();
+    const path = this.getRecordPath();
+    const alt = this.getRecordAlt();
+    const newData = this.getValues();
+    apiRequest(
+      "/rawrecord",
+      {
+        json: { data: newData, path: path, alt: alt },
+        method: "PUT",
+      },
+      makeRichPromise
+    ).then((resp) => {
+      this.setState(
+        {
+          hasPendingChanges: false,
+        },
+        () => {
+          this.transitionToAdminPage(".preview", {
+            path: this.getUrlRecordPathWithAlt(path),
+          });
+        }
+      );
+    });
   }
 
-  handleDeleteRecord (event) {
-    event.preventDefault()
-    this.transitionToAdminPage('.delete', {
-      path: this.getUrlRecordPathWithAlt()
-    })
+  handleDeleteRecord(event) {
+    event.preventDefault();
+    this.transitionToAdminPage(".delete", {
+      path: this.getUrlRecordPathWithAlt(),
+    });
   }
 
-  getValueForField (widget, field) {
-    let value = this.state.recordData[field.name]
+  getValueForField(widget, field) {
+    let value = this.state.recordData[field.name];
     if (value === undefined) {
-      value = ''
+      value = "";
       if (widget.deserializeValue) {
-        value = widget.deserializeValue(value, field.type)
+        value = widget.deserializeValue(value, field.type);
       }
     }
-    return value
+    return value;
   }
 
-  getPlaceholderForField (widget, field) {
+  getPlaceholderForField(widget, field) {
     if (field.default !== null) {
       if (widget.deserializeValue) {
-        return widget.deserializeValue(field.default, field.type)
+        return widget.deserializeValue(field.default, field.type);
       }
-      return field.default
-    } else if (field.name === '_slug') {
-      return this.state.recordInfo.slug_format
-    } else if (field.name === '_template') {
-      return this.state.recordInfo.default_template
-    } else if (field.name === '_attachment_type') {
-      return this.state.recordInfo.implied_attachment_type
+      return field.default;
+    } else if (field.name === "_slug") {
+      return this.state.recordInfo.slug_format;
+    } else if (field.name === "_template") {
+      return this.state.recordInfo.default_template;
+    } else if (field.name === "_attachment_type") {
+      return this.state.recordInfo.implied_attachment_type;
     }
-    return null
+    return null;
   }
 
-  renderFormField (field) {
-    const widget = getWidgetComponentWithFallback(field.type)
+  renderFormField(field) {
+    const widget = getWidgetComponentWithFallback(field.type);
     return (
       <FieldBox
         key={field.name}
@@ -227,64 +246,74 @@ class EditPage extends RecordComponent {
         placeholder={this.getPlaceholderForField(widget, field)}
         field={field}
         setFieldValue={this.setFieldValue}
-        disabled={!(field.alts_enabled == null || (field.alts_enabled ^ this.state.recordInfo.alt === '_primary'))}
+        disabled={
+          !(
+            field.alts_enabled == null ||
+            field.alts_enabled ^ (this.state.recordInfo.alt === "_primary")
+          )
+        }
       />
-    )
+    );
   }
 
-  render () {
+  render() {
     // we have not loaded anything yet.
     if (this.state.recordInfo === null) {
-      return null
+      return null;
     }
 
-    const deleteButton = this.state.recordInfo.can_be_deleted
-      ? (
-        <button type='button' className='btn btn-default' onClick={this.handleDeleteRecord}>
-          {i18n.trans('DELETE')}
-        </button>
-      )
-      : null
+    const deleteButton = this.state.recordInfo.can_be_deleted ? (
+      <button
+        type="button"
+        className="btn btn-default"
+        onClick={this.handleDeleteRecord}
+      >
+        {i18n.trans("DELETE")}
+      </button>
+    ) : null;
 
     const title = this.state.recordInfo.is_attachment
-      ? i18n.trans('EDIT_ATTACHMENT_METADATA_OF')
-      : i18n.trans('EDIT_PAGE_NAME')
+      ? i18n.trans("EDIT_ATTACHMENT_METADATA_OF")
+      : i18n.trans("EDIT_PAGE_NAME");
 
     const label = this.state.recordInfo.label_i18n
       ? i18n.trans(this.state.recordInfo.label_i18n)
-      : this.state.recordInfo.label
+      : this.state.recordInfo.label;
 
-    const fields = this.state.recordDataModel.fields.filter(f => !this.isIllegalField(f))
+    const fields = this.state.recordDataModel.fields.filter(
+      (f) => !this.isIllegalField(f)
+    );
     return (
-      <div className='edit-area'>
-        {this.state.hasPendingChanges && <Prompt message={() => i18n.trans('UNLOAD_ACTIVE_TAB')} />}
-        <h2>{title.replace('%s', label)}</h2>
+      <div className="edit-area">
+        {this.state.hasPendingChanges && (
+          <Prompt message={() => i18n.trans("UNLOAD_ACTIVE_TAB")} />
+        )}
+        <h2>{title.replace("%s", label)}</h2>
         <form ref={this.formRef}>
-          <FieldRows
-            fields={fields}
-            renderFunc={this.renderFormField}
-          />
-          <div className='actions'>
+          <FieldRows fields={fields} renderFunc={this.renderFormField} />
+          <div className="actions">
             <button
-              type='submit' className='btn btn-primary'
+              type="submit"
+              className="btn btn-primary"
               disabled={!this.state.hasPendingChanges}
               onClick={this.handleSaveChanges}
             >
-              {i18n.trans('SAVE_CHANGES')}
+              {i18n.trans("SAVE_CHANGES")}
             </button>
             <button
-              type='submit' className='btn btn-info'
+              type="submit"
+              className="btn btn-info"
               disabled={!this.state.hasPendingChanges}
               onClick={this.handleSaveChangesAndPreview}
             >
-              {i18n.trans('SAVE_CHANGES_AND_PREVIEW')}
+              {i18n.trans("SAVE_CHANGES_AND_PREVIEW")}
             </button>
             {deleteButton}
           </div>
         </form>
       </div>
-    )
+    );
   }
 }
 
-export default EditPage
+export default EditPage;
