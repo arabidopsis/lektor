@@ -64,10 +64,6 @@ class PreviewPage extends RecordComponent {
       if (!urlPathsConsideredEqual(intendedPath, framePath)) {
         frame.src = getCanonicalUrl(intendedPath);
       }
-
-      // frame.onload = (event) => {
-      //   this.onFrameNavigated()
-      // }
     }
   }
 
