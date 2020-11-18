@@ -35,11 +35,11 @@ export default class RecordComponent extends Component {
       newAlt = this.getRecordAlt();
     }
     let rv = fsToUrlPath(newPath);
-    if (pageNum && pageNum !== 1) {
-      rv += `@${pageNum}`;
-    }
     if (newAlt !== "_primary") {
       rv += "+" + newAlt;
+    }
+    if (pageNum && pageNum !== 1) {
+      rv += `@${pageNum}`;
     }
     return rv;
   }
