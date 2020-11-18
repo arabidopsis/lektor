@@ -149,25 +149,25 @@ class Sidebar extends RecordComponent {
     );
   }
 
-  fsOpen(event) {
-    event.preventDefault();
-    apiRequest(
-      "/browsefs",
-      {
-        data: {
-          path: this.getRecordPath(),
-          alt: this.getRecordAlt(),
-        },
-        // eslint-disable-next-line indent
-        method: "POST",
-      },
-      makeRichPromise
-    ).then((resp) => {
-      if (!resp.okay) {
-        alert(i18n.trans("ERROR_CANNOT_BROWSE_FS"));
-      }
-    });
-  }
+  // fsOpen(event) {
+  //   event.preventDefault();
+  //   apiRequest(
+  //     "/browsefs",
+  //     {
+  //       data: {
+  //         path: this.getRecordPath(),
+  //         alt: this.getRecordAlt(),
+  //       },
+  //       // eslint-disable-next-line indent
+  //       method: "POST",
+  //     },
+  //     makeRichPromise
+  //   ).then((resp) => {
+  //     if (!resp.okay) {
+  //       alert(i18n.trans("ERROR_CANNOT_BROWSE_FS"));
+  //     }
+  //   });
+  // }
 
   renderPageActions() {
     const urlPath = this.getUrlRecordPathWithAlt();
@@ -184,6 +184,12 @@ class Sidebar extends RecordComponent {
       </li>
     );
 
+    links.push(
+      <li key="preview">
+        <Link to={`${urlPath}/preview`}>{i18n.trans("PREVIEW")}</Link>
+      </li>
+    );
+
     if (this.state.canBeDeleted) {
       links.push(
         <li key="delete">
@@ -192,21 +198,15 @@ class Sidebar extends RecordComponent {
       );
     }
 
-    links.push(
-      <li key="preview">
-        <Link to={`${urlPath}/preview`}>{i18n.trans("PREVIEW")}</Link>
-      </li>
-    );
-
-    if (this.state.recordExists) {
-      links.push(
-        <li key="fs-open">
-          <a href="#" onClick={this.fsOpen.bind(this)}>
-            {getBrowseButtonTitle()}
-          </a>
-        </li>
-      );
-    }
+    // if (this.state.recordExists) {
+    //   links.push(
+    //     <li key="fs-open">
+    //       <a href="#" onClick={this.fsOpen.bind(this)}>
+    //         {getBrowseButtonTitle()}
+    //       </a>
+    //     </li>
+    //   );
+    // }
 
     if (this.state.canHaveChildren) {
       links.push(
