@@ -71,6 +71,7 @@ class Type(object):
             "widget": self.widget,
             "size": self.size,
             "width": self.width,
+            "input-type": self.options.get("input-type"),
         }
 
     def value_from_raw(self, raw):

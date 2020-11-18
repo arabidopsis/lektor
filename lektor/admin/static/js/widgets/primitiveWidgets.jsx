@@ -87,7 +87,7 @@ function InputWidgetBase(props) {
 export function SingleLineTextInputWidget(props) {
   return (
     <InputWidgetBase
-      inputType="text"
+      inputType={props.type["input-type"] ? props.type["input-type"] : "text"}
       inputAddon={<i className="fa fa-paragraph" />}
       {...props}
     />
