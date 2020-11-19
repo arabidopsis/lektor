@@ -1,6 +1,7 @@
 import time
 import traceback
 from contextlib import contextmanager
+from datetime import datetime
 
 import click
 from click import style
@@ -293,6 +294,12 @@ class CliReporter(Reporter):
         self._write_line(
             style(
                 "Finished %s in %.2f sec" % (activity, time.time() - start_time),
+                fg="cyan",
+            )
+        )
+        self._write_line(
+            style(
+                f"@{datetime.now()}",
                 fg="cyan",
             )
         )
