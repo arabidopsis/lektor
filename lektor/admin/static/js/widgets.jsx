@@ -58,6 +58,7 @@ FallbackWidget.propTypes = widgetPropTypes;
 /**
  * An input widget wrapped in a <div> with description and label.
  */
+
 export const FieldBox = React.memo(function FieldBox(props) {
   const { field, value, placeholder, disabled } = props;
   const onChange = props.onChange
