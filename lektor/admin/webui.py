@@ -5,13 +5,22 @@ from flask import abort
 from flask import Flask
 from flask import request
 from flask.helpers import safe_join
-from werkzeug.utils import append_slash_redirect
+from werkzeug.utils import redirect
 
 from lektor.admin.modules import register_modules
 from lektor.builder import Builder
 from lektor.buildfailures import FailureController
 from lektor.db import Database
 from lektor.reporter import CliReporter
+
+
+# bugfix
+def append_slash_redirect(environ, code=301):
+    new_path = environ["PATH_INFO"].rstrip("/") + "/"
+    query_string = environ.get("QUERY_STRING")
+    if query_string:
+        new_path += "?" + query_string
+    return redirect(new_path, code)
 
 
 class LektorInfo(object):
