@@ -23,6 +23,13 @@ class PreviewPage extends RecordComponent {
     this.syncState();
   }
 
+  shouldComponentUpdate(nextProps) {
+    return (
+      this.getUrlRecordPathWithAlt() !== this.state.pageUrlFor ||
+      nextProps.match.params.path !== this.props.match.params.path
+    );
+  }
+
   syncState() {
     const alt = this.getRecordAlt();
     const path = this.getRecordPath();
