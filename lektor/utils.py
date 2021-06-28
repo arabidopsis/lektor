@@ -31,7 +31,7 @@ from markupsafe import Markup
 from slugify import slugify as _slugify
 from werkzeug import urls
 from werkzeug.http import http_date
-from werkzeug.posixemulation import rename
+from lektor.posixemulation import rename
 from werkzeug.urls import url_parse
 
 from lektor._compat import (

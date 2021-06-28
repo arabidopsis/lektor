@@ -12,7 +12,6 @@ from contextlib import contextmanager
 from itertools import chain
 
 import click
-from werkzeug.posixemulation import rename
 
 from lektor._compat import iteritems
 from lektor._compat import PY2
@@ -21,6 +20,7 @@ from lektor.build_programs import builtin_build_programs
 from lektor.buildfailures import FailureController
 from lektor.context import Context
 from lektor.environment import PRIMARY_ALT
+from lektor.posixemulation import rename
 from lektor.reporter import reporter
 from lektor.sourcesearch import find_files
 from lektor.utils import fs_enc
