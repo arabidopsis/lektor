@@ -23,8 +23,21 @@ import random
 import sys
 import time
 
-from ._compat import to_unicode
-from .filesystem import get_filesystem_encoding
+# from ._compat import to_unicode
+# from .filesystem import get_filesystem_encoding
+
+
+def to_unicode(
+    x, charset=sys.getdefaultencoding(), errors="strict", allow_none_charset=False
+):
+    if x is None:
+        return None
+    if not isinstance(x, bytes):
+        return str(x)
+    if charset is None and allow_none_charset:
+        return x
+    return x.decode(charset, errors)
+
 
 can_rename_open_file = False
 
@@ -37,8 +50,8 @@ if os.name == "nt":
         _MoveFileEx = ctypes.windll.kernel32.MoveFileExW
 
         def _rename(src, dst):
-            src = to_unicode(src, get_filesystem_encoding())
-            dst = to_unicode(dst, get_filesystem_encoding())
+            src = to_unicode(src, sys.getfilesystemencoding())
+            dst = to_unicode(dst, sys.getfilesystemencoding())
             if _rename_atomic(src, dst):
                 return True
             retry = 0
