@@ -133,7 +133,14 @@ class AddChildPage extends RecordComponent {
   renderFields() {
     const fields = [];
 
-    if (!this.state.newChildInfo.implied_model) {
+    function hasmultimodels(self) {
+      return (
+        self.state.newChildInfo.implied_models &&
+        self.state.newChildInfo.implied_models.length > 1
+      );
+    }
+
+    if (!this.state.newChildInfo.implied_model || hasmultimodels(this)) {
       const choices = this.getAvailableModels().map((model) => {
         return (
           <option value={model.id} key={model.id}>

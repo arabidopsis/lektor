@@ -216,7 +216,7 @@ def get_new_record_info():
             "available_models": dict(
                 (k, describe_model(v))
                 for k, v in iteritems(pad.db.datamodels)
-                if not v.hidden or k in implied
+                if not v.hidden and (not implied or k in implied)
             ),
         }
     )
