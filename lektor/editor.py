@@ -154,6 +154,10 @@ class EditorSession(object):
         else:
             label = self.id
         can_be_deleted = not self.datamodel.protected and not self.is_root
+        if self.is_attachment and self.implied_attachment_type == "image":
+            img = self.image_url()
+        else:
+            img = None
         return {
             "data": dict(self.iteritems()),
             "record_info": {
@@ -169,9 +173,29 @@ class EditorSession(object):
                 "slug_format": self.slug_format,
                 "implied_attachment_type": self.implied_attachment_type,
                 "default_template": self.datamodel.get_default_template_name(),
+                "image_data": img,
             },
             "datamodel": self.datamodel.to_json(self.pad, self.record, self.alt),
         }
+
+    def image_url(self):
+        base = self.pad.db.to_fs_path(self.path)
+        try:
+            from io import BytesIO
+            from PIL import Image
+            from base64 import b64encode
+
+            img = Image.open(base)
+            img.thumbnail((150, 150))
+            b = BytesIO()
+            img.save(b, format="PNG")
+            b = b.getvalue()
+            return "data:{};base64,{}".format(
+                "image/%s" % img.format.lower(), b64encode(b).decode("ascii")
+            )
+
+        except Exception:
+            return None
 
     def __contains__(self, key):
         try:

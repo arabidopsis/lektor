@@ -262,6 +262,13 @@ class EditPage extends RecordComponent {
       return null;
     }
 
+    const img_data = this.state.recordInfo.image_data ? (
+      <img
+        src={this.state.recordInfo.image_data}
+        className="image-data-thumbnail"
+      />
+    ) : null;
+
     const deleteButton = this.state.recordInfo.can_be_deleted ? (
       <button
         type="button"
@@ -289,6 +296,7 @@ class EditPage extends RecordComponent {
           <Prompt message={() => i18n.trans("UNLOAD_ACTIVE_TAB")} />
         )}
         <h2>{title.replace("%s", label)}</h2>
+        {img_data}
         <form ref={this.formRef}>
           <FieldRows fields={fields} renderFunc={this.renderFormField} />
           <div className="actions">
