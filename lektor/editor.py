@@ -173,12 +173,13 @@ class EditorSession(object):
                 "slug_format": self.slug_format,
                 "implied_attachment_type": self.implied_attachment_type,
                 "default_template": self.datamodel.get_default_template_name(),
-                "image_data": img,
+                "image_data": img,  # added by IRC see EditPage.jsx
             },
             "datamodel": self.datamodel.to_json(self.pad, self.record, self.alt),
         }
 
-    def image_url(self):
+    def image_url(self):  # added by IRC
+        # assumes file is an image file
         base = self.pad.db.to_fs_path(self.path)
         try:
             from io import BytesIO
@@ -186,9 +187,9 @@ class EditorSession(object):
             from base64 import b64encode
 
             img = Image.open(base)
-            img.thumbnail((150, 150))
+            img.thumbnail((200, 200))
             b = BytesIO()
-            img.save(b, format="PNG")
+            img.save(b, format=img.format)
             b = b.getvalue()
             return "data:{};base64,{}".format(
                 "image/%s" % img.format.lower(), b64encode(b).decode("ascii")
