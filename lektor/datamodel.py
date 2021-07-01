@@ -13,6 +13,7 @@ from lektor.environment import PRIMARY_ALT
 from lektor.i18n import generate_i18n_kvs
 from lektor.i18n import get_i18n_block
 from lektor.pagination import Pagination
+from lektor.types.fake import FakeType
 from lektor.utils import bool_from_string
 from lektor.utils import slugify
 
@@ -277,7 +278,10 @@ class DataModel(object):
             fields = []
         self.fields = fields
         if primary_field is None and fields:
-            primary_field = fields[0].name
+            for field in fields:
+                if not isinstance(field.type, FakeType):
+                    primary_field = field.name
+                    break
         self.primary_field = primary_field
         self.parent = parent
 
