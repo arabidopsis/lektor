@@ -14,7 +14,7 @@ from lektor.db import Database
 from lektor.reporter import CliReporter
 
 
-# bugfix
+# bugfix IRC
 def append_slash_redirect(environ, code=301):
     new_path = environ["PATH_INFO"].rstrip("/") + "/"
     query_string = environ.get("QUERY_STRING")
